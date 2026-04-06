@@ -1,2 +1,14 @@
-# Given the following SegWit transaction hex, extract the witness signature"
-# transaction="020000000001017b0e276e3b195d7e2b57e33845c8462de673932e03eb6f5be0185acc3b44947d0100000000fdffffff020092fe1e00000000160014b050ad5f64dd6c21d1ee8a32275f8352df5acbdff0f7981c000000001600148394885ef0640d2255f6f1d62ee36518f2df6e880248304502210091511bb7d1c9525c1efdc4f389cbdf47a413ca8b8854a2feb8a7552a60321334022062aa1c90da6d3215ea4a301031518ab4fe657b8d2065ba05ab1e64a6ec385bcf0121032f306c639e6a76baf57524efe145f9a9b09d123a49cdd6aaf433cf7ab7b7897900000000"
+#!/bin/bash
+transaction="020000000001017b0e276e3b195d7e2b57e33845c8462de673932e03eb6f5be0185acc3b44947d0100000000fdffffff020092fe1e00000000160014b050ad5f64dd6c21d1ee8a32275f8352df5acbdff0f7981c000000001600148394885ef0640d2255f6f1d62ee36518f2df6e880248304502210091511bb7d1c9525c1efdc4f389cbdf47a413ca8b8854a2feb8a7552a60321334022062aa1c90da6d3215ea4a301031518ab4fe657b8d2065ba05ab1e64a6ec385bcf0121032f306c639e6a76baf57524efe145f9a9b09d123a49cdd6aaf433cf7ab7b7897900000000"
+
+# decoderawtransaction gives us the full transaction
+# vin[0] is the first input
+# txinwitness is the witness array [signature, pubkey]
+# index [0] = the signature
+bitcoin-cli -regtest decoderawtransaction "$transaction" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+# txinwitness is a list: [signature, pubkey]
+# [0] gets the signature (first item)
+print(data['vin'][0]['txinwitness'][0])
+"
